@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import print_function
+import getopt
 import os
 import re
 import sys
@@ -35,6 +36,11 @@ account_file_encrypted = '.swjsq.account'
 account_file_plain = 'swjsq.account.txt'
 shell_file = 'swjsq_wget.sh'
 ipk_file = 'swjsq_0.0.1_all.ipk'
+
+
+class NoCredentialsError(RuntimeError):
+    pass
+
 
 try:
     from Crypto.PublicKey import RSA
@@ -255,7 +261,7 @@ def api(cmd, uid, session_id = '', extras = ''):
     return json.loads(http_req(url, headers = header_api))
 
 
-def fast_d1ck(uname, pwd, login_type, save = True):
+def fast_d1ck(uname, pwd, login_type, save=True, gen_sh=True, gen_ipk=True):
     if uname[-2] == ':':
         print('Error: sub account can not upgrade')
         os._exit(3)
@@ -290,10 +296,12 @@ def fast_d1ck(uname, pwd, login_type, save = True):
     _dial_account = _['dial_account']
 
     _script_mtime = os.stat(os.path.realpath(__file__)).st_mtime
-    if not os.path.exists(shell_file) or os.stat(shell_file).st_mtime < _script_mtime:
-        make_wget_script(dt['userID'], pwd, _dial_account, _payload)
-    if not os.path.exists(ipk_file) or os.stat(ipk_file).st_mtime < _script_mtime:
-        update_ipk()
+    if gen_sh:
+        if not os.path.exists(shell_file) or os.stat(shell_file).st_mtime < _script_mtime:
+            make_wget_script(dt['userID'], pwd, _dial_account, _payload)
+    if gen_ipk:
+        if not os.path.exists(ipk_file) or os.stat(ipk_file).st_mtime < _script_mtime:
+            update_ipk()
 
     print("To Upgrade: ", end = '')
     uprint('%s%s ' % ( _['province_name'], _['sp_name']),
@@ -572,6 +580,50 @@ Description:  Xunlei Fast Dick
     ipk_fobj.close()
 
 
+class Arguments(object):
+    def __init__(self):
+        self.gen_sh = True
+        self.gen_ipk = True
+
+
+def show_usage():
+    options = [
+        ('-h, --help', 'show this help message and exit'),
+        ('--no-sh', 'skip script generation'),
+        ('--no-ipk', 'skip ipk generation'),
+    ]
+
+    print('usage: {} [OPTIONS]'.format(sys.argv[0]))
+    print()
+    print('options:')
+    for opt, description in options:
+        print('  {}\t{}'.format(opt, description))
+
+
+def parse_args():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'h', ['help', 'no-sh', 'no-ipk'])
+    except getopt.GetoptError as err:
+        print(err)
+        show_usage()
+        sys.exit(2)
+
+    args = Arguments()
+
+    for o, a in opts:
+        if o in ('-h', '--help'):
+            show_usage()
+            sys.exit()
+        elif o == '--no-sh':
+            args.gen_sh = False
+        elif o == '--no-ipk':
+            args.gen_ipk = False
+        else:
+            assert False, 'Unhandled option'
+
+    return args
+
+
 if __name__ == '__main__':
     # change to script directory
     if getattr(sys, 'frozen', False):
@@ -582,19 +634,37 @@ if __name__ == '__main__':
     
     setup()
     try:
+        # Option defaults
+        save_encrypted = True
+        login_type = TYPE_NORMAL_ACCOUNT
+
+        # Arguments
+        args = parse_args()
+
+        # Load credentials
         if os.path.exists(account_file_plain):
-            uid, pwd = open(account_file_plain).read().strip().split(',')
+            with open(account_file_plain) as f:
+                uid, pwd = f.read().strip().split(',')
             if PY3K:
                 pwd = pwd.encode('utf-8')
-            fast_d1ck(uid, hashlib.md5(pwd).hexdigest(), TYPE_NORMAL_ACCOUNT)
+            pwd_md5 = hashlib.md5(pwd).hexdigest()
         elif os.path.exists(account_file_encrypted):
-            uid, pwd_md5 = open(account_file_encrypted).read().strip().split(',')
-            fast_d1ck(uid, pwd_md5, TYPE_NUM_ACCOUNT, save = False)
-        elif 'XUNLEI_UID' in os.environ and 'XUNLEI_PASSWD' in os.environ:
-            uid = os.environ['XUNLEI_UID']
-            pwd = os.environ['XUNLEI_PASSWD']
-            fast_d1ck(uid, hashlib.md5(pwd).hexdigest(), TYPE_NORMAL_ACCOUNT)
+            with open(account_file_encrypted) as f:
+                uid, pwd_md5 = f.read().strip().split(',')
+            save_encrypted = False
+            login_type = TYPE_NUM_ACCOUNT
         else:
-            print('Please use XUNLEI_UID=<uid>/XUNLEI_PASSWD=<pass> envrionment varibles or create config file "%s", input account splitting with comma(,). Eg:\nyonghuming,mima' % account_file_plain)
+            uid = os.getenv('XUNLEI_UID')
+            pwd = os.getenv('XUNLEI_PASSWD')
+            if not uid or not pwd:
+                raise NoCredentialsError()
+            pwd_md5 = hashlib.md5(pwd).hexdigest()
+
+        # Routine
+        fast_d1ck(uid, pwd_md5, login_type,
+                  save=save_encrypted,
+                  gen_sh=args.gen_sh, gen_ipk=args.gen_ipk)
+    except NoCredentialsError:
+        print('Please use XUNLEI_UID=<uid>/XUNLEI_PASSWD=<pass> envrionment varibles or create config file "%s", input account splitting with comma(,). Eg:\nyonghuming,mima' % account_file_plain)
     except KeyboardInterrupt:
         pass
