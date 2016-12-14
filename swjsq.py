@@ -159,7 +159,7 @@ def uprint(s, fallback = None, end = None):
         else:
             break
         try:
-            print(get_current_time() + s.encode('utf-8'), end = end)
+            print((get_current_time() + s).encode('utf-8'), end = end)
         except UnicodeEncodeError:
             if fallback:
                 print(fallback, end = end)
