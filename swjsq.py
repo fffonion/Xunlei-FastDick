@@ -149,12 +149,14 @@ def get_mac(nic = '', to_splt = ':'):
 def long2hex(l):
     return hex(l)[2:].upper().rstrip('L')
 
+def get_current_time():
+    return time.strftime('%Y-%m-%d %X ', time.localtime(time.time()))
 
 def uprint(s, fallback = None, end = None):
     global UNICODE_WARNING_SHOWN
     while True:
         try:
-            print(s, end = end)
+            print(get_current_time() + s, end = end)
         except UnicodeEncodeError:
             if UNICODE_WARNING_SHOWN:
                 print('Warning: locale of your system may not be utf8 compatible, output will be truncated')
@@ -162,7 +164,7 @@ def uprint(s, fallback = None, end = None):
         else:
             break
         try:
-            print(s.encode('utf-8'), end = end)
+            print((get_current_time() + s).encode('utf-8'), end = end)
         except UnicodeEncodeError:
             if fallback:
                 print(fallback, end = end)
@@ -401,9 +403,9 @@ def fast_d1ck(uname, pwd, save = True):
             has_error = True
         with open('swjsq.log', 'a') as f:
             try:
-                f.write('%s %s\n' % (time.strftime('%X', time.localtime(time.time())), _))
+                f.write('%s %s\n' % ( get_current_time() , _))
             except UnicodeEncodeError:
-                f.write('%s keepalive\n' % (time.strftime('%X', time.localtime(time.time()))))
+                f.write('%s keepalive\n' % get_current_time() )
         if has_error:
             # sleep 5 min and repeat the same state
             time.sleep(290)#5 min
