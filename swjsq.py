@@ -63,7 +63,7 @@ DEVICES = ['Xiaomi MI 6' ,'Xiaomi Mi 5X','Xiaomi Redmi Note 3',
 'OPPO 6607 U3','OPPO R9s Plus'
 'Samsung SM-G9350 Galaxy S7 Edge', 'Samsung SM-N9200 Galaxy Note 5', 
 'Vivo X9s Plus','Vivo X9','Vivo Xplay6','Vivo Y927']
-OS_VERSIONS = ['7.0.1', '6.0.1', '5.1.1', '5.0.1']
+OS_VERSIONS = ['7.0','7.1.1','6.0', '6.0.1', '5.1.1', '5.0.2','5.1.2']
 
 DEVICE = random.choice(DEVICES)
 OS_VERSION = random.choice(OS_VERSIONS)
