@@ -8,6 +8,7 @@ import time
 import binascii
 import tarfile
 import atexit
+import random
 try:
     import ssl
     import hashlib
@@ -51,9 +52,13 @@ ipk_file = 'swjsq_0.0.1_all.ipk'
 log_file = 'swjsq.log'
 
 login_xunlei_intv = 600 # do not login twice in 10min
+DEVICES = ['Xiaomi MI 6', 'Huawei BLN-AL20 Honor 6X', 'Huawei EVA-AL00 P9 Premium Edition',
+'Huawei EVA-L09 P9 Standard Edition','Huawei WAS-AL00 Honor 8 Lite','LeTV Le X620 Le 2',
+'OPPO 6607 U3','Vivo X9','Vivo Xplay6','Xiaomi Mi 5X']
+OS_VERSIONS = ['7.0.1', '6.0.1', '5.1.1', '5.0.1']
 
-DEVICE = "SmallRice R1"
-OS_VERSION = "5.0.1"
+DEVICE = random.choice(DEVICES)
+OS_VERSION = random.choice(OS_VERSIONS)
 
 header_xl = {
     'Content-Type':'',
