@@ -79,12 +79,12 @@ $ docker run -d --name=xunlei-fastdick --restart=unless-stopped -e XUNLEI_UID=<u
 
 ## 编译基于arm32v7内核的镜像(例如运行在树莓派上)
 
-编译
+**编译**
 ```
 $ docker build -f Dockerfile.arm32v7 -t yourname/xunlei-fastdick .
 ```
 
-运行
+**运行**
 ```
 $ docker run -d \
     --name=xunlei-fastdick \
