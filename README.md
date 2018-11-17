@@ -77,11 +77,11 @@ $ docker run -d --name=xunlei-fastdick --restart=unless-stopped -e XUNLEI_UID=<u
 $ docker run -d --name=xunlei-fastdick --restart=unless-stopped -e XUNLEI_UID=<uid> -e XUNLEI_PASSWD=<uid> daocloud.io/fffonion/xunlei-fastdick
 ```
 
-**编译基于arm32v7内核的镜像(例如运行在树莓派上)**
+## 编译基于arm32v7内核的镜像(例如运行在树莓派上)
 
 编译
 ```
-$ docker build -f Dockerfile.arm32v7 -t yourname/fffonion-xunlei-fastdick .
+$ docker build -f Dockerfile.arm32v7 -t yourname/xunlei-fastdick .
 ```
 
 运行
@@ -91,7 +91,7 @@ $ docker run -d \
     --restart=unless-stopped \
     -e XUNLEI_UID=<uid> \
     -e XUNLEI_PASSWD=<uid> \ 
-    yourname/fffonion-xunlei-fastdick
+    yourname/xunlei-fastdick
 ```
 
 # 说明
