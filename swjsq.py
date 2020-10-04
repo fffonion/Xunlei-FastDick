@@ -568,14 +568,19 @@ class fast_d1ck(object):
 TEST_URL="https://baidu.com"
 UA_XL="User-Agent: swjsq/0.0.1"
 
-if [ ! -z "`wget --no-check-certificate -O - $TEST_URL 2>&1|grep "100%"`" ]; then
-   HTTP_REQ="wget -q --no-check-certificate -O - "
-   POST_ARG="--post-data="
-else
-   command -v curl >/dev/null 2>&1 && curl -kI $TEST_URL >/dev/null 2>&1 || { echo >&2 "Xunlei-FastD1ck cannot find wget or curl installed with https(ssl) enabled in this system."; exit 1; }
-   HTTP_REQ="curl -ks"
-   POST_ARG="--data "
-fi
+test_link()
+{
+	if [ ! -z "`wget --no-check-certificate -O - $TEST_URL 2>&1|grep "100%"`" ]; then
+		HTTP_REQ="wget -q --no-check-certificate -O - "
+		POST_ARG="--post-data="
+	else
+		HTTP_REQ="curl -ks"
+		POST_ARG="--data "
+		command -v curl >/dev/null 2>&1 && curl -kI $TEST_URL >/dev/null 2>&1 || { echo >&2 "Access Internet by using wget or curl failed! Retry..."; sleep 5; test_link; }
+	fi
+}
+
+test_link
 
 uid='''+str(self.xl_uid)+'''
 pwd='''+pwd+'''
