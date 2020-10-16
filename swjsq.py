@@ -75,13 +75,13 @@ OS_BUILD = "LRX22C"
 header_xl = {
     'Content-Type':'',
     'Connection': 'Keep-Alive',
-    'Accept-Encoding': 'gzip',
+    'Accept-Encoding': '',
     'User-Agent': 'android-async-http/xl-acc-sdk/version-2.1.1.177662'
 }
 header_api = {
     'Content-Type':'',
     'Connection': 'Keep-Alive',
-    'Accept-Encoding': 'gzip',
+    'Accept-Encoding': '',
     'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android %s; %s Build/%s)' % (OS_VERSION, DEVICE_MODEL, OS_BUILD)
 }
 
